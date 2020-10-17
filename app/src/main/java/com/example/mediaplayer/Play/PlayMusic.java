@@ -9,16 +9,16 @@ public class PlayMusic implements Runnable {
     private MediaPlayer mMediaPlayer;
     private Context mContext;
     private SeekBar mSeekBar;
-    private String mMusicName;
+    private String mMusicAdress;
 
-    public PlayMusic(MediaPlayer mediaPlayer, Context context,String musicName) {
+    public PlayMusic(MediaPlayer mediaPlayer, Context context,String musicAddress) {
         mMediaPlayer=mediaPlayer;
         mContext=context.getApplicationContext();
-        mMusicName=musicName;
+        mMusicAdress =musicAddress;
     }
 
     public void playSong(SeekBar seekBar,MediaPlayer mediaPlayer) {
-        mMediaPlayer=mediaPlayer;
+
         mSeekBar=seekBar;
         boolean wasPlaying=false;
         try {
@@ -36,14 +36,14 @@ public class PlayMusic implements Runnable {
                     mediaPlayer = new MediaPlayer();
                 }
 
-                AssetFileDescriptor descriptor = mContext.getAssets().openFd(mMusicName);
+                AssetFileDescriptor descriptor = mContext.getAssets().openFd(mMusicAdress);
                 mediaPlayer.setDataSource(descriptor.getFileDescriptor(), descriptor.getStartOffset(), descriptor.getLength());
-                descriptor.close();
+
 
                 mediaPlayer.prepare();
                 mediaPlayer.setVolume(0.5f, 0.5f);
                 mediaPlayer.setLooping(false);
-                seekBar.setMax(mMediaPlayer.getDuration());
+                seekBar.setMax(mediaPlayer.getDuration());
 
                 mediaPlayer.start();
                 new Thread(this).start();

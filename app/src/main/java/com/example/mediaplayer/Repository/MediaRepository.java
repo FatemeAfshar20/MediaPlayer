@@ -37,8 +37,7 @@ public class MediaRepository {
         try{
             String[] fileNames=assetManager.list(ASSET_FOLDER);
             for (String fileName: fileNames) {
-
-                String assetPath = ASSET_FOLDER + File.separator + fileName;
+                String assetPath=ASSET_FOLDER+File.separator+fileName;
                 Music sound = new Music(assetPath);
                 musics.add(sound);
             }

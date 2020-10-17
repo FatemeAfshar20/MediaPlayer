@@ -15,48 +15,36 @@
         android:textSize="20sp"
         tools:text="@string/app_name" />
 
-<LinearLayout
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_below="@+id/music_name"
-    android:orientation="horizontal"
-    android:gravity="center"
-    >
-    <ImageButton
-        android:id="@+id/btn_play"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:background="#FFFFFF"
-        android:contentDescription="@string/play_music"
-        app:srcCompat="@android:drawable/ic_media_play" />
-
-        <ImageButton
-            android:id="@+id/btn_stop"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:layout_marginLeft="5dp"
-            android:layout_marginEnd="-57dp"
-            android:layout_marginRight="-57dp"
-            android:layout_toStartOf="@+id/btn_pause"
-            android:layout_toLeftOf="@+id/btn_pause"
-            android:contentDescription="@string/pause_music"
-          />/  app:srcCompat="@android:drawable/ic_menu_close_clear_cancel" />
-
-    <SeekBar
-        android:id="@+id/seekbar"
-        android:layout_width="250dp"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/music_name"
-        android:layout_marginTop="10dp" />
+        android:gravity="center"
+        android:orientation="horizontal">
 
-    <ImageButton
-        android:id="@+id/btn_pause"
-        android:layout_width="30dp"
-        android:layout_height="30dp"
-        android:layout_alignParentLeft="true"
-        android:contentDescription="@string/pause_music"
-        app:srcCompat="@android:drawable/ic_media_pause" />
-</LinearLayout>
+        <ImageButton
+            android:id="@+id/btn_play"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="#00FFFFFF"
+            android:contentDescription="@string/play_music"
+            app:srcCompat="@android:drawable/ic_media_play" />
+
+        <SeekBar
+            android:id="@+id/seekbar"
+            android:layout_width="250dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/music_name"
+            android:layout_margin="10dp" />
+
+        <ImageButton
+            android:id="@+id/btn_pause"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentLeft="true"
+            android:background="#00FFFFFF"
+            android:contentDescription="@string/pause_music"
+            app:srcCompat="@android:drawable/ic_media_pause" />
+    </LinearLayout>
 
 </RelativeLayout>

@@ -21,6 +21,7 @@ import com.example.mediaplayer.Play.PlayMusic;
 import com.example.mediaplayer.R;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.Holder> {
@@ -42,6 +43,7 @@ public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.Holder> {
         return new Holder(view);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onBindViewHolder(@NonNull Holder holder, int position) {
             holder.bind(mMusicList.get(position));
@@ -52,14 +54,12 @@ public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.Holder> {
         return mMusicList.size();
     }
 
-    class Holder extends RecyclerView.ViewHolder{
+    class Holder extends RecyclerView.ViewHolder implements Runnable{
         private TextView mMusicName;
         private ImageButton mBtnPlay,mBtnPause,mBtnStop;
         private Music mMusic;
         private MediaPlayer mMediaPlayer=new MediaPlayer();
-        private Integer mInteger;
         private SeekBar mSeekBar;
-        private PlayMusic mPlayMusic;
 
         public Holder(@NonNull View itemView) {
             super(itemView);
@@ -71,14 +71,23 @@ public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.Holder> {
             mMusicName =view.findViewById(R.id.music_name);
             mBtnPlay=view.findViewById(R.id.btn_play);
             mBtnPause=view.findViewById(R.id.btn_pause);
-            mBtnStop=view.findViewById(R.id.btn_stop);
             mSeekBar=view.findViewById(R.id.seekbar);
         }
 
+        @RequiresApi(api = Build.VERSION_CODES.N)
         private void bind(Music music){
             mMusic=music;
             mMusicName.setText(mMusic.getName());
-            mPlayMusic=new PlayMusic(mMediaPlayer,mContext,mMusic.getAddress());
+            try {
+                AssetFileDescriptor descriptor=mContext.getAssets().openFd(mMusic.getAddress());
+                mMediaPlayer.setDataSource(descriptor);
+                mMediaPlayer.prepare();
+                mMediaPlayer.setVolume(0.5f, 0.5f);
+                mMediaPlayer.setLooping(false);
+                mSeekBar.setMax(mMediaPlayer.getDuration());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         private void setListener(){
@@ -86,18 +95,8 @@ public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.Holder> {
                 @RequiresApi(api = Build.VERSION_CODES.N)
                 @Override
                 public void onClick(View v) {
-                   try {
-                       AssetFileDescriptor descriptor = mContext.getAssets().openFd("Music"+ File.separator+mMusic.getName()+".mp3");
-                       mMediaPlayer.setDataSource(descriptor);
-                       descriptor.close();
-
-                       mMediaPlayer.prepare();
-                       mMediaPlayer.setVolume(0.5f, 0.5f);
-                       mMediaPlayer.setLooping(false);
-                       mSeekBar.setMax(mMediaPlayer.getDuration());
-                   }catch (Exception e){
-                       e.printStackTrace();
-                   }
+                        mMediaPlayer.start();
+                    new Thread(Holder.this).start();
                 }
             });
 
@@ -108,21 +107,13 @@ public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.Holder> {
                 }
             });
 
-            mBtnStop.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    mMediaPlayer.stop();
-                }
-            });
-
             mSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                     int x = (int) Math.ceil(progress / 1000f);
 
                     if (x== 0 && mMediaPlayer != null && !mMediaPlayer.isPlaying()) {
-                        mPlayMusic.clearMediaPlayer();
-                        mSeekBar.setProgress(0);
+                       seekBar.setProgress(0);
                     }
                 }
 
@@ -140,5 +131,26 @@ public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.Holder> {
             });
         }
 
+        @Override
+        public void run() {
+
+            int currentPosition = mMediaPlayer.getCurrentPosition();
+            int total = mMediaPlayer.getDuration();
+
+
+            while (mMediaPlayer != null && mMediaPlayer.isPlaying() && currentPosition < total) {
+                try {
+                    Thread.sleep(1000);
+                    currentPosition = mMediaPlayer.getCurrentPosition();
+                } catch (InterruptedException e) {
+                    return;
+                } catch (Exception e) {
+                    return;
+                }
+
+                mSeekBar.setProgress(currentPosition);
+
+            }
+        }
     }
 }

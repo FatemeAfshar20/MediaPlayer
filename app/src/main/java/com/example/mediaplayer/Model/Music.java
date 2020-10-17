@@ -7,23 +7,16 @@ public class Music {
     private String mName;
     private String mAddress;
 
-    public Music() {
+    public Music(Integer id) {
+        mId = id;
     }
 
     public Music(String address) {
-        mAddress = address;
+        mAddress=address;
+        String[] sections=address.split(File.separator);
+        String musicName=sections[sections.length-1];
 
-        String[] sections=mAddress.split(File.separator);
-        String fileNameWithExtension=sections[sections.length-1];
-        int lastDotIndex=fileNameWithExtension.lastIndexOf(".");
-
-        mName=fileNameWithExtension.substring(0,lastDotIndex);
-    }
-
-    public Music(Integer id, String name, String address) {
-        mId = id;
-        mName = name;
-        mAddress = address;
+        mName = musicName.substring(0,musicName.lastIndexOf("."));
     }
 
     public Integer getId() {
