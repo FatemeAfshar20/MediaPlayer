@@ -4,12 +4,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Controller.Fragment.MediaFragment">
+    tools:context=".Controller.Fragment.MediaFragment"
+    android:background="@drawable/background_gradient"
+    >
+
+    <RelativeLayout
+        android:id="@+id/fragment_images_singers"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/fragment_images_singers"
         />
 
 </RelativeLayout>

@@ -1,7 +1,9 @@
 package com.example.mediaplayer.Controller.Fragment;
 
+import android.content.Context;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -11,13 +13,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.mediaplayer.Adapter.MediaAdapter;
-import com.example.mediaplayer.Controller.Activity.MadiaActivity;
 import com.example.mediaplayer.R;
 import com.example.mediaplayer.Repository.MediaRepository;
 
 public class MediaFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private MediaRepository mRepository;
+    private TopFragment mTopFragment;
 
     public MediaFragment() {
         // Required empty public constructor
@@ -31,9 +33,21 @@ public class MediaFragment extends Fragment {
     }
 
     @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+
+        if (context instanceof  TopFragment)
+            mTopFragment=(TopFragment) context;
+        else
+            throw new ClassCastException(
+                    "Must Implement TopFragment interface");
+    }
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mRepository=MediaRepository.getInstance(getContext());
+        mTopFragment.addFragmentToTop();
     }
 
     @Override
@@ -49,5 +63,9 @@ public class MediaFragment extends Fragment {
         mRecyclerView.setAdapter(adapter);
 
         return view;
+    }
+
+    public interface TopFragment{
+        void addFragmentToTop();
     }
 }

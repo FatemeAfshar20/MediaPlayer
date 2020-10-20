@@ -7,20 +7,18 @@ import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import androidx.core.content.ContextCompat;
+import androidx.appcompat.widget.AppCompatImageButton;
+import androidx.appcompat.widget.AppCompatSeekBar;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.mediaplayer.Model.Music;
-import com.example.mediaplayer.Play.PlayMusic;
 import com.example.mediaplayer.R;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -37,8 +35,8 @@ public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.Holder> {
     @NonNull
     @Override
     public Holder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view= LayoutInflater.from(mContext).inflate(
-                R.layout.item_music,parent,false);
+        View view = LayoutInflater.from(mContext).inflate(
+                R.layout.item_music, parent, false);
 
         return new Holder(view);
     }
@@ -46,7 +44,7 @@ public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.Holder> {
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onBindViewHolder(@NonNull Holder holder, int position) {
-            holder.bind(mMusicList.get(position));
+        holder.bind(mMusicList.get(position));
     }
 
     @Override
@@ -54,12 +52,12 @@ public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.Holder> {
         return mMusicList.size();
     }
 
-    class Holder extends RecyclerView.ViewHolder implements Runnable{
+    class Holder extends RecyclerView.ViewHolder implements Runnable {
         private TextView mMusicName;
-        private ImageButton mBtnPlay,mBtnPause,mBtnStop;
+        private AppCompatImageButton mBtnPlay, mBtnPause;
         private Music mMusic;
-        private MediaPlayer mMediaPlayer=new MediaPlayer();
-        private SeekBar mSeekBar;
+        private MediaPlayer mMediaPlayer = new MediaPlayer();
+        private AppCompatSeekBar mSeekBar;
 
         public Holder(@NonNull View itemView) {
             super(itemView);
@@ -67,19 +65,25 @@ public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.Holder> {
             setListener();
         }
 
-        private void findView(View view){
-            mMusicName =view.findViewById(R.id.music_name);
-            mBtnPlay=view.findViewById(R.id.btn_play);
-            mBtnPause=view.findViewById(R.id.btn_pause);
-            mSeekBar=view.findViewById(R.id.seekbar);
+        private void findView(View view) {
+            mMusicName = view.findViewById(R.id.music_name);
+            mBtnPlay = view.findViewById(R.id.btn_play);
+            mBtnPause = view.findViewById(R.id.btn_pause);
+            mSeekBar = view.findViewById(R.id.seekbar);
+            setupVisibilityPauseMusic();
         }
 
         @RequiresApi(api = Build.VERSION_CODES.N)
-        private void bind(Music music){
-            mMusic=music;
+        private void bind(Music music) {
+            mMusic = music;
             mMusicName.setText(mMusic.getName());
+            createMediaPlayer();
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.N)
+        private void createMediaPlayer() {
             try {
-                AssetFileDescriptor descriptor=mContext.getAssets().openFd(mMusic.getAddress());
+                AssetFileDescriptor descriptor = mContext.getAssets().openFd(mMusic.getAddress());
                 mMediaPlayer.setDataSource(descriptor);
                 mMediaPlayer.prepare();
                 mMediaPlayer.setVolume(0.5f, 0.5f);
@@ -90,12 +94,14 @@ public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.Holder> {
             }
         }
 
-        private void setListener(){
+        private void setListener() {
             mBtnPlay.setOnClickListener(new View.OnClickListener() {
                 @RequiresApi(api = Build.VERSION_CODES.N)
                 @Override
                 public void onClick(View v) {
-                        mMediaPlayer.start();
+                    mMediaPlayer.start();
+                    setupVisibilityPlayMusic();
+                    setupVisibilityPlayMusic();
                     new Thread(Holder.this).start();
                 }
             });
@@ -104,6 +110,7 @@ public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.Holder> {
                 @Override
                 public void onClick(View v) {
                     mMediaPlayer.pause();
+                    setupVisibilityPauseMusic();
                 }
             });
 
@@ -112,8 +119,8 @@ public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.Holder> {
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                     int x = (int) Math.ceil(progress / 1000f);
 
-                    if (x== 0 && mMediaPlayer != null && !mMediaPlayer.isPlaying()) {
-                       seekBar.setProgress(0);
+                    if (x == 0 && mMediaPlayer != null && !mMediaPlayer.isPlaying()) {
+                        seekBar.setProgress(0);
                     }
                 }
 
@@ -129,6 +136,18 @@ public class MediaAdapter extends RecyclerView.Adapter<MediaAdapter.Holder> {
                     }
                 }
             });
+        }
+
+        private void setupVisibilityPauseMusic() {
+            mBtnPlay.setVisibility(View.VISIBLE);
+            mBtnPause.setVisibility(View.GONE);
+            mSeekBar.setVisibility(View.GONE);
+        }
+
+        private void setupVisibilityPlayMusic() {
+            mBtnPlay.setVisibility(View.GONE);
+            mSeekBar.setVisibility(View.VISIBLE);
+            mBtnPause.setVisibility(View.VISIBLE);
         }
 
         @Override

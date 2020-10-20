@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:theme="@style/Theme.AppCompat"
-    tools:context=".Controller.Activity.MadiaActivity">
+    tools:context=".Controller.Activity.MediaActivity">
 
     <FrameLayout
         android:id="@+id/fragment_container"
